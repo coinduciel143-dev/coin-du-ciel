@@ -1,40 +1,57 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/properties")
-      .then(res => setProperties(res.data))
-      .catch(err => console.log(err));
+    fetch("https://coin-du-ciel-backend.onrender.com/api/properties")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Données reçues :", data);
+        setProperties(data);
+      })
+      .catch((err) => console.error("Erreur :", err));
   }, []);
 
   return (
-    <div style={{fontFamily:"Arial"}}>
+    <div className="App">
+      <h1>🏡 Coin du Ciel</h1>
 
-      <h1 style={{textAlign:"center"}}>Coin du Ciel</h1>
-
-      <div style={{
-        display:"flex",
-        gap:"20px",
-        padding:"20px",
-        flexWrap:"wrap"
-      }}>
-        {properties.map(p => (
-          <div key={p._id} style={{
-            border:"1px solid #ccc",
-            padding:"10px",
-            width:"250px"
-          }}>
-            <img src={p.image} width="100%" />
-            <h3>{p.title}</h3>
-            <p>{p.city}</p>
-            <p>{p.price}€</p>
-          </div>
-        ))}
-      </div>
-
+      {properties.length === 0 ? (
+        <p>Chargement...</p>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "20px",
+            justifyContent: "center",
+          }}
+        >
+          {properties.map((property) => (
+            <div
+              key={property._id}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                padding: "10px",
+                width: "250px",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+              }}
+            >
+              <img
+                src={property.image}
+                alt={property.title}  // ✅ CORRECTION ICI (très important)
+                style={{ width: "100%", borderRadius: "10px" }}
+              />
+              <h3>{property.title}</h3>
+              <p>📍 {property.city}</p>
+              <p><strong>{property.price} €</strong></p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
